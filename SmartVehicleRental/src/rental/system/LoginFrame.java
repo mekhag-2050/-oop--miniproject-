@@ -1,54 +1,119 @@
 package rental.system;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class LoginFrame extends JFrame {
 
     public LoginFrame() {
+
         setTitle("Login - Smart Vehicle Rental");
         setSize(400, 330);
-        setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JLabel title = new JLabel("SMART VEHICLE RENTAL");
-        title.setBounds(100, 25, 220, 25);
-        add(title);
+        // Main Layout
+        setLayout(new BorderLayout(10, 10));
 
+        // ==============================
+        // TITLE - NORTH
+        // ==============================
+
+        JLabel title = new JLabel(
+                "SMART VEHICLE RENTAL",
+                SwingConstants.CENTER);
+
+        title.setFont(new Font("Arial", Font.BOLD, 16));
+
+        add(title, BorderLayout.NORTH);
+
+        // ==============================
+        // LOGIN FORM - CENTER
+        // ==============================
+
+        JPanel formPanel = new JPanel(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.insets = new Insets(8, 10, 8, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Username
         JLabel l1 = new JLabel("Username:");
-        l1.setBounds(50, 75, 100, 25);
-        add(l1);
+        JTextField t1 = new JTextField(15);
 
-        JTextField t1 = new JTextField();
-        t1.setBounds(150, 75, 180, 25);
-        add(t1);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0;
 
+        formPanel.add(l1, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1;
+
+        formPanel.add(t1, gbc);
+
+        // Password
         JLabel l2 = new JLabel("Password:");
-        l2.setBounds(50, 115, 100, 25);
-        add(l2);
+        JPasswordField t2 = new JPasswordField(15);
 
-        JPasswordField t2 = new JPasswordField();
-        t2.setBounds(150, 115, 180, 25);
-        add(t2);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 0;
+
+        formPanel.add(l2, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1;
+
+        formPanel.add(t2, gbc);
+
+        add(formPanel, BorderLayout.CENTER);
+
+        // ==============================
+        // BOTTOM - SOUTH
+        // ==============================
+
+        JPanel bottomPanel = new JPanel();
+
+        bottomPanel.setLayout(
+                new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
+
+        // Login
+        JPanel loginPanel = new JPanel(new FlowLayout());
 
         JButton b1 = new JButton("Login");
-        b1.setBounds(150, 155, 100, 30);
-        add(b1);
+
+        loginPanel.add(b1);
+
+        bottomPanel.add(loginPanel);
+
+        // Register
+        JPanel registerPanel = new JPanel(new FlowLayout());
 
         JLabel l3 = new JLabel("New customer?");
-        l3.setBounds(80, 205, 100, 25);
-        add(l3);
-
         JButton b2 = new JButton("Register");
-        b2.setBounds(190, 205, 100, 30);
-        add(b2);
 
-        JLabel l4 = new JLabel("Admin Login");
-        l4.setBounds(155, 255, 100, 25);
-        add(l4);
+        registerPanel.add(l3);
+        registerPanel.add(b2);
+
+        bottomPanel.add(registerPanel);
+
+        // Admin
+        JPanel adminPanel = new JPanel(new FlowLayout());
+
+        JButton b3 = new JButton("Admin Login");
+
+        adminPanel.add(b3);
+
+        bottomPanel.add(adminPanel);
+
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        setVisible(true);
     }
 
     public static void main(String[] args) {
-        new LoginFrame().setVisible(true);
+        new LoginFrame();
     }
 }
