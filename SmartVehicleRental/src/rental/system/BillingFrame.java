@@ -1,51 +1,81 @@
 package rental.system;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class BillingFrame extends JFrame {
 
     public BillingFrame() {
+
         setTitle("Rental Bill");
         setSize(500, 450);
-        setLayout(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        // Main Layout
+        setLayout(new BorderLayout(10, 10));
+
+        // ==============================
+        // TITLE - NORTH
+        // ==============================
 
         JLabel title = new JLabel(
                 "RENTAL BILL",
                 SwingConstants.CENTER);
-        title.setBounds(150, 20, 200, 30);
-        add(title);
+
+        title.setFont(new Font("Arial", Font.BOLD, 18));
+
+        add(title, BorderLayout.NORTH);
+
+        // ==============================
+        // BILL DETAILS - CENTER
+        // ==============================
 
         JTextArea billArea = new JTextArea();
-        billArea.setBounds(50, 60, 400, 250);
+
         billArea.setEditable(false);
 
         billArea.setText(
-                "Customer Name: \n" +
-                "Vehicle: \n" +
-                "Registration No: \n" +
-                "Start Date: \n" +
-                "No. of Days: \n" +
-                "Rate per Day: \n" +
-                "Payment Method: \n" +
-                "Payment Status: \n" +
+                "Customer Name:\n\n" +
+                "Vehicle:\n\n" +
+                "Registration No:\n\n" +
+                "Start Date:\n\n" +
+                "No. of Days:\n\n" +
+                "Rate per Day:\n\n" +
+                "Payment Method:\n\n" +
+                "Payment Status:\n\n" +
                 "--------------------------\n" +
-                "Total Amount: "
+                "Total Amount:\n"
         );
 
-        add(billArea);
+        JScrollPane scrollPane =
+                new JScrollPane(billArea);
 
-        JButton b1 = new JButton("Print Bill");
-        b1.setBounds(100, 330, 130, 35);
-        add(b1);
+        add(scrollPane, BorderLayout.CENTER);
 
-        JButton b2 = new JButton("Back to Home");
-        b2.setBounds(270, 330, 130, 35);
-        add(b2);
+        // ==============================
+        // BUTTONS - SOUTH
+        // ==============================
+
+        JPanel buttonPanel = new JPanel(
+                new FlowLayout(
+                        FlowLayout.CENTER, 15, 10));
+
+        JButton printButton =
+                new JButton("Print Bill");
+
+        JButton homeButton =
+                new JButton("Back to Home");
+
+        buttonPanel.add(printButton);
+        buttonPanel.add(homeButton);
+
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        setVisible(true);
     }
 
     public static void main(String[] args) {
-        new BillingFrame().setVisible(true);
+        new BillingFrame();
     }
 }
