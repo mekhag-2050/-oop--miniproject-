@@ -1,159 +1,156 @@
 package rental.system;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class VehicleManagementFrame extends JFrame {
+    DefaultTableModel model;
+    JTable table;
 
     public VehicleManagementFrame() {
-
         setTitle("Vehicle Management");
-        setSize(600, 550);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setSize(750, 400);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(10, 10));
 
-        // Title
-        JLabel title = new JLabel(
-                "VEHICLE MANAGEMENT",
-                SwingConstants.CENTER);
+        model = new DefaultTableModel(
+                new String[]{"Name", "Number", "Type", "Rent", "Available"}, 0);
 
-        title.setFont(new Font("Arial", Font.BOLD, 18));
-        add(title, BorderLayout.NORTH);
+        table = new JTable(model);
+        refreshTable();
 
-        // Form Panel
-        JPanel formPanel = new JPanel(new GridBagLayout());
+        JButton add = new JButton("Add Vehicle");
+        JButton delete = new JButton("Delete Vehicle");
+        JButton refresh = new JButton("Refresh");
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 10, 8, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JPanel buttons = new JPanel();
+        buttons.add(add);
+        buttons.add(delete);
+        buttons.add(refresh);
 
-        // Model Name
-        JLabel l1 = new JLabel("Model Name:");
-        JTextField t1 = new JTextField(20);
+        add(new JScrollPane(table), BorderLayout.CENTER);
+        add(buttons, BorderLayout.SOUTH);
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-        formPanel.add(l1, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t1, gbc);
-
-        // Registration Number
-        JLabel l2 = new JLabel("Registration No:");
-        JTextField t2 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.weightx = 0;
-        formPanel.add(l2, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t2, gbc);
-
-        // Category
-        JLabel l3 = new JLabel("Category:");
-
-        JComboBox<String> c1 = new JComboBox<>(
-                new String[]{
-                        "Car",
-                        "Bike"
-                });
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.weightx = 0;
-        formPanel.add(l3, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(c1, gbc);
-
-        // Fuel Type
-        JLabel l4 = new JLabel("Fuel Type:");
-
-        JComboBox<String> c2 = new JComboBox<>(
-                new String[]{
-                        "Petrol",
-                        "Diesel",
-                        "Electric"
-                });
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.weightx = 0;
-        formPanel.add(l4, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(c2, gbc);
-
-        // Daily Rate
-        JLabel l5 = new JLabel("Daily Rate:");
-        JTextField t3 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.weightx = 0;
-        formPanel.add(l5, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t3, gbc);
-
-        // Status
-        JLabel l6 = new JLabel("Status:");
-
-        JComboBox<String> c3 = new JComboBox<>(
-                new String[]{
-                        "Available",
-                        "Rented",
-                        "Maintenance"
-                });
-
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.weightx = 0;
-        formPanel.add(l6, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(c3, gbc);
-
-        add(formPanel, BorderLayout.CENTER);
-
-        // Buttons
-        JPanel buttonPanel = new JPanel(
-                new FlowLayout(FlowLayout.CENTER, 15, 10));
-
-        JButton b1 = new JButton("Add Vehicle");
-        JButton b2 = new JButton("Update");
-        JButton b3 = new JButton("Delete");
-        JButton b4 = new JButton("Clear");
-
-        buttonPanel.add(b1);
-        buttonPanel.add(b2);
-        buttonPanel.add(b3);
-        buttonPanel.add(b4);
-
-        // Information
-        JLabel info = new JLabel(
-                "Each registration number represents one physical vehicle.",
-                SwingConstants.CENTER);
-
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-
-        bottomPanel.add(buttonPanel, BorderLayout.NORTH);
-        bottomPanel.add(info, BorderLayout.SOUTH);
-
-        add(bottomPanel, BorderLayout.SOUTH);
-
-        setVisible(true);
+        add.addActionListener(e -> addVehicle());
+        delete.addActionListener(e -> deleteVehicle());
+        refresh.addActionListener(e -> refreshTable());
     }
 
-    public static void main(String[] args) {
-        new VehicleManagementFrame();
+    private void refreshTable() {
+        model.setRowCount(0);
+
+        for (Vehicle v : AppData.vehicles) {
+            model.addRow(new Object[]{
+                v.getVehicleName(),
+                v.getVehicleNumber(),
+                v.getType(),
+                v.getRentPerDay(),
+                v.isAvailable() ? "Yes" : "No"
+            });
+        }
+    }
+
+    private void addVehicle() {
+        JTextField name = new JTextField();
+        JTextField number = new JTextField();
+        JTextField type = new JTextField();
+        JTextField rent = new JTextField();
+
+        Object[] fields = {
+            "Vehicle Name:", name,
+            "Vehicle Number:", number,
+            "Vehicle Type:", type,
+            "Rent Per Day:", rent
+        };
+
+        int result = JOptionPane.showConfirmDialog(
+                this, fields, "Add Vehicle",
+                JOptionPane.OK_CANCEL_OPTION);
+
+        if (result != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        if (name.getText().trim().isEmpty()
+                || number.getText().trim().isEmpty()
+                || type.getText().trim().isEmpty()
+                || rent.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Fill all fields.");
+            return;
+        }
+
+        double amount;
+
+        try {
+            amount = Double.parseDouble(rent.getText().trim());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Enter a valid rent amount.");
+            return;
+        }
+
+        if (amount <= 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Rent must be greater than zero.");
+            return;
+        }
+
+        for (Vehicle v : AppData.vehicles) {
+            if (v.getVehicleNumber().equalsIgnoreCase(
+                    number.getText().trim())) {
+                JOptionPane.showMessageDialog(this,
+                        "Vehicle number already exists.");
+                return;
+            }
+        }
+
+        AppData.vehicles.add(new Vehicle(
+                name.getText().trim(),
+                number.getText().trim(),
+                type.getText().trim(),
+                amount));
+
+        refreshTable();
+        JOptionPane.showMessageDialog(this,
+                "Vehicle added successfully.");
+    }
+
+    private void deleteVehicle() {
+        int row = table.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Select a vehicle first.");
+            return;
+        }
+
+        String number = model.getValueAt(row, 1).toString();
+
+        for (Vehicle v : AppData.vehicles) {
+            if (v.getVehicleNumber().equals(number)) {
+                boolean booked = false;
+
+                for (Booking b : AppData.bookings) {
+                    if (b.getVehicle() == v
+                            && !b.getStatus().equals("Cancelled")) {
+                        booked = true;
+                        break;
+                    }
+                }
+
+                if (booked) {
+                    JOptionPane.showMessageDialog(this,
+                            "This vehicle has booking records and cannot be deleted.");
+                    return;
+                }
+
+                AppData.vehicles.remove(v);
+                refreshTable();
+                JOptionPane.showMessageDialog(this,
+                        "Vehicle deleted.");
+                return;
+            }
+        }
     }
 }
