@@ -1,5 +1,4 @@
 package rental.system;
-
 import javax.swing.*;
 
 public class AdminLoginFrame extends JFrame {
