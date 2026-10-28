@@ -1,5 +1,4 @@
 package rental.system;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -39,7 +38,7 @@ public class CustomerProfileFrame extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Customer Name
-        JLabel l1 = new JLabel("Customer Name:");
+        JLabel l1 = new JLabel("User Name:");
         JTextField t1 = new JTextField(20);
 
         gbc.gridx = 0;
