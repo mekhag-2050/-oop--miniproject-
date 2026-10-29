@@ -1,117 +1,86 @@
 package rental.system;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class CustomerManagementFrame extends JFrame {
+    DefaultTableModel model;
+    JTable table;
 
     public CustomerManagementFrame() {
-
         setTitle("Customer Management");
-        setSize(550, 470);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setSize(700, 400);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(10, 10));
 
-        // Title
-        JLabel title = new JLabel(
-                "CUSTOMER MANAGEMENT",
-                SwingConstants.CENTER);
+        model = new DefaultTableModel(
+                new String[]{"Name", "Email", "Phone"}, 0);
 
-        title.setFont(new Font("Arial", Font.BOLD, 18));
-        add(title, BorderLayout.NORTH);
+        table = new JTable(model);
+        refreshTable();
 
-        // Form Panel
-        JPanel formPanel = new JPanel(new GridBagLayout());
+        JButton delete = new JButton("Delete Customer");
+        JButton refresh = new JButton("Refresh");
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 10, 8, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JPanel buttons = new JPanel();
+        buttons.add(delete);
+        buttons.add(refresh);
 
-        // Customer Name
-        JLabel l1 = new JLabel("Customer Name:");
-        JTextField t1 = new JTextField(20);
+        add(new JScrollPane(table), BorderLayout.CENTER);
+        add(buttons, BorderLayout.SOUTH);
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-        formPanel.add(l1, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t1, gbc);
-
-        // Phone No
-        JLabel l2 = new JLabel("Phone No:");
-        JTextField t2 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.weightx = 0;
-        formPanel.add(l2, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t2, gbc);
-
-        // Email
-        JLabel l3 = new JLabel("Email:");
-        JTextField t3 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.weightx = 0;
-        formPanel.add(l3, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t3, gbc);
-
-        // License No
-        JLabel l4 = new JLabel("License No:");
-        JTextField t4 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.weightx = 0;
-        formPanel.add(l4, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t4, gbc);
-
-        // Address
-        JLabel l5 = new JLabel("Address:");
-        JTextField t5 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.weightx = 0;
-        formPanel.add(l5, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t5, gbc);
-
-        add(formPanel, BorderLayout.CENTER);
-
-        // Buttons
-        JPanel buttonPanel = new JPanel(
-                new FlowLayout(FlowLayout.CENTER, 15, 10));
-
-        JButton b1 = new JButton("Update");
-        JButton b2 = new JButton("Delete");
-        JButton b3 = new JButton("View");
-
-        buttonPanel.add(b1);
-        buttonPanel.add(b2);
-        buttonPanel.add(b3);
-
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        setVisible(true);
+        delete.addActionListener(e -> deleteCustomer());
+        refresh.addActionListener(e -> refreshTable());
     }
 
-    public static void main(String[] args) {
-        new CustomerManagementFrame();
+    private void refreshTable() {
+        model.setRowCount(0);
+
+        for (Customer c : AppData.customers) {
+            model.addRow(new Object[]{
+                c.getName(),
+                c.getEmail(),
+                c.getPhone()
+            });
+        }
+    }
+
+    private void deleteCustomer() {
+        int row = table.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Select a customer first.");
+            return;
+        }
+
+        String email = model.getValueAt(row, 1).toString();
+
+        for (Customer c : AppData.customers) {
+            if (c.getEmail().equalsIgnoreCase(email)) {
+                boolean hasBooking = false;
+
+                for (Booking b : AppData.bookings) {
+                    if (b.getCustomer() == c
+                            && !b.getStatus().equals("Cancelled")) {
+                        hasBooking = true;
+                        break;
+                    }
+                }
+
+                if (hasBooking) {
+                    JOptionPane.showMessageDialog(this,
+                            "Cannot delete a customer with active booking records.");
+                    return;
+                }
+
+                AppData.customers.remove(c);
+                refreshTable();
+
+                JOptionPane.showMessageDialog(this,
+                        "Customer deleted.");
+                return;
+            }
+        }
     }
 }
