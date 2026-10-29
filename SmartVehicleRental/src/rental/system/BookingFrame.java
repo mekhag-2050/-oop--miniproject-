@@ -3,9 +3,14 @@ package rental.system;
 import javax.swing.*;
 import java.awt.*;
 
-public class PaymentFrame extends JFrame {
-    public PaymentFrame(Booking booking) {
-        setTitle("Smart Vehicle Rental System - Payment");
+public class BookingFrame extends JFrame {
+    Vehicle vehicle;
+    JTextField daysField;
+
+    public BookingFrame(Vehicle vehicle) {
+        this.vehicle = vehicle;
+
+        setTitle("Smart Vehicle Rental System - Vehicle Booking");
         setSize(750, 500);
         setMinimumSize(new Dimension(550, 400));
         setLocationRelativeTo(null);
@@ -15,7 +20,7 @@ public class PaymentFrame extends JFrame {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBackground(new Color(235, 242, 250));
 
-        // Payment card
+        // Booking card
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
@@ -31,63 +36,93 @@ public class PaymentFrame extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(12, 10, 12, 10);
 
-        JLabel title = new JLabel("PAYMENT", JLabel.CENTER);
+        JLabel title = new JLabel("VEHICLE BOOKING", JLabel.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setForeground(new Color(25, 65, 115));
 
-        JLabel amount = new JLabel(
-                "Amount to Pay: Rs. " + booking.getTotalAmount(),
-                JLabel.CENTER);
-        amount.setFont(new Font("Arial", Font.BOLD, 19));
-        amount.setForeground(new Color(35, 100, 180));
+        JLabel vehicleLabel = new JLabel(
+                "Vehicle:  " + vehicle.getVehicleName());
+        vehicleLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        vehicleLabel.setForeground(new Color(45, 55, 70));
 
-        String[] methods = {"UPI", "Card", "Cash"};
-        JComboBox<String> paymentMethod =
-                new JComboBox<>(methods);
-        paymentMethod.setFont(new Font("Arial", Font.PLAIN, 15));
-        paymentMethod.setPreferredSize(new Dimension(300, 42));
-        paymentMethod.setBorder(
-                BorderFactory.createTitledBorder("Payment Method"));
+        JLabel rentLabel = new JLabel(
+                "Rent per day:  Rs. " + vehicle.getRentPerDay());
+        rentLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        rentLabel.setForeground(new Color(45, 55, 70));
 
-        JLabel instruction = new JLabel(
-                "Select a payment method and confirm.",
-                JLabel.CENTER);
-        instruction.setFont(new Font("Arial", Font.PLAIN, 14));
-        instruction.setForeground(Color.GRAY);
+        daysField = new JTextField();
+        daysField.setFont(new Font("Arial", Font.PLAIN, 15));
+        daysField.setPreferredSize(new Dimension(300, 42));
+        daysField.setBorder(
+                BorderFactory.createTitledBorder("Number of days"));
 
-        JButton confirm = new JButton("Confirm Payment");
-        confirm.setFont(new Font("Arial", Font.BOLD, 15));
-        confirm.setBackground(new Color(35, 100, 180));
-        confirm.setForeground(Color.WHITE);
-        confirm.setFocusPainted(false);
-        confirm.setPreferredSize(new Dimension(250, 42));
+        JButton book = new JButton("Confirm Booking");
+        book.setFont(new Font("Arial", Font.BOLD, 15));
+        book.setBackground(new Color(35, 100, 180));
+        book.setForeground(Color.WHITE);
+        book.setFocusPainted(false);
+        book.setPreferredSize(new Dimension(250, 42));
 
         gbc.gridy = 0;
         panel.add(title, gbc);
 
         gbc.gridy = 1;
-        panel.add(amount, gbc);
+        panel.add(vehicleLabel, gbc);
 
         gbc.gridy = 2;
-        panel.add(paymentMethod, gbc);
+        panel.add(rentLabel, gbc);
 
         gbc.gridy = 3;
-        panel.add(instruction, gbc);
+        panel.add(daysField, gbc);
 
         gbc.gridy = 4;
-        panel.add(confirm, gbc);
+        panel.add(book, gbc);
 
         mainPanel.add(panel);
         add(mainPanel, BorderLayout.CENTER);
 
-        confirm.addActionListener(e -> {
-            booking.setStatus("Paid");
-
-            JOptionPane.showMessageDialog(this,
-                    "Payment recorded successfully.");
-
-            new BillingFrame(booking).setVisible(true);
-            dispose();
-        });
+        book.addActionListener(e -> confirmBooking());
     }
+
+    private void confirmBooking() {
+        if (AppData.loggedInCustomer == null) {
+            JOptionPane.showMessageDialog(this, "Please log in.");
+            return;
         }
+
+        int days;
+
+        try {
+            days = Integer.parseInt(daysField.getText().trim());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Enter a valid number of days.");
+            return;
+        }
+
+        if (days <= 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Days must be greater than zero.");
+            return;
+        }
+
+        if (!vehicle.isAvailable()) {
+            JOptionPane.showMessageDialog(this,
+                    "This vehicle is no longer available.");
+            return;
+        }
+
+        Booking booking = new Booking(
+                AppData.loggedInCustomer, vehicle, days);
+
+        AppData.bookings.add(booking);
+        vehicle.setAvailable(false);
+
+        JOptionPane.showMessageDialog(this,
+                "Booking created. Total: Rs. "
+                        + booking.getTotalAmount());
+
+        new PaymentFrame(booking).setVisible(true);
+        dispose();
+    }
+                               }
