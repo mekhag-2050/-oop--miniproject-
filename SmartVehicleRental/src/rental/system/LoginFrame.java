@@ -1,118 +1,79 @@
 package rental.system;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class LoginFrame extends JFrame {
+    JTextField emailField;
+    JPasswordField passwordField;
 
     public LoginFrame() {
-
-        setTitle("Login - Smart Vehicle Rental");
-        setSize(400, 330);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setTitle("Smart Vehicle Rental System - Login");
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Main Layout
-        setLayout(new BorderLayout(10, 10));
+        JPanel panel = new JPanel(new GridLayout(5, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        // ==============================
-        // TITLE - NORTH
-        // ==============================
+        JLabel title = new JLabel("VEHICLE RENTAL LOGIN", JLabel.CENTER);
+        emailField = new JTextField();
+        passwordField = new JPasswordField();
 
-        JLabel title = new JLabel(
-                "SMART VEHICLE RENTAL",
-                SwingConstants.CENTER);
+        JButton loginButton = new JButton("Login");
+        JButton registerButton = new JButton("Register");
+        JButton adminButton = new JButton("Admin Login");
 
-        title.setFont(new Font("Arial", Font.BOLD, 16));
+        panel.add(title);
+        panel.add(emailField);
+        panel.add(passwordField);
+        panel.add(loginButton);
+        panel.add(registerButton);
 
-        add(title, BorderLayout.NORTH);
+        add(panel, BorderLayout.CENTER);
+        add(adminButton, BorderLayout.SOUTH);
 
-        // ==============================
-        // LOGIN FORM - CENTER
-        // ==============================
+        emailField.setBorder(BorderFactory.createTitledBorder("Email"));
+        passwordField.setBorder(BorderFactory.createTitledBorder("Password"));
 
-        JPanel formPanel = new JPanel(new GridBagLayout());
+        loginButton.addActionListener(e -> login());
+        registerButton.addActionListener(e -> {
+            new CustomerRegistrationFrame().setVisible(true);
+            dispose();
+        });
+        adminButton.addActionListener(e -> {
+            new AdminLoginFrame().setVisible(true);
+            dispose();
+        });
+    }
 
-        GridBagConstraints gbc = new GridBagConstraints();
+    private void login() {
+        String email = emailField.getText().trim();
+        String password = new String(passwordField.getPassword());
 
-        gbc.insets = new Insets(8, 10, 8, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        if (email.equals("admin") && password.equals("admin123")) {
+            new AdminDashboardFrame().setVisible(true);
+            dispose();
+            return;
+        }
 
-        // Username
-        JLabel l1 = new JLabel("Username:");
-        JTextField t1 = new JTextField(15);
+        for (Customer c : AppData.customers) {
+            if (c.getEmail().equalsIgnoreCase(email)
+                    && c.checkPassword(password)) {
+                AppData.loggedInCustomer = c;
+                new CustomerDashboardFrame().setVisible(true);
+                dispose();
+                return;
+            }
+        }
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-
-        formPanel.add(l1, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-
-        formPanel.add(t1, gbc);
-
-        // Password
-        JLabel l2 = new JLabel("Password:");
-        JPasswordField t2 = new JPasswordField(15);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.weightx = 0;
-
-        formPanel.add(l2, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-
-        formPanel.add(t2, gbc);
-
-        add(formPanel, BorderLayout.CENTER);
-
-        // ==============================
-        // BOTTOM - SOUTH
-        // ==============================
-
-        JPanel bottomPanel = new JPanel();
-
-        bottomPanel.setLayout(
-                new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
-
-        // Login
-        JPanel loginPanel = new JPanel(new FlowLayout());
-
-        JButton b1 = new JButton("Login");
-
-        loginPanel.add(b1);
-
-        bottomPanel.add(loginPanel);
-
-        // Register
-        JPanel registerPanel = new JPanel(new FlowLayout());
-
-        JLabel l3 = new JLabel("New customer?");
-        JButton b2 = new JButton("Register");
-
-        registerPanel.add(l3);
-        registerPanel.add(b2);
-
-        bottomPanel.add(registerPanel);
-
-        // Admin
-        JPanel adminPanel = new JPanel(new FlowLayout());
-
-        JButton b3 = new JButton("Admin Login");
-
-        adminPanel.add(b3);
-
-        bottomPanel.add(adminPanel);
-
-        add(bottomPanel, BorderLayout.SOUTH);
-
-        setVisible(true);
+        JOptionPane.showMessageDialog(this,
+                "Invalid email or password.");
     }
 
     public static void main(String[] args) {
-        new LoginFrame();
+        SwingUtilities.invokeLater(() -> {
+            new LoginFrame().setVisible(true);
+        });
     }
-}
+            }
