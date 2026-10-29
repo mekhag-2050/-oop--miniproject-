@@ -1,158 +1,75 @@
 package rental.system;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class AvailableVehiclesFrame extends JFrame {
+    JTable table;
+    DefaultTableModel model;
 
     public AvailableVehiclesFrame() {
-
         setTitle("Available Vehicles");
-        setSize(600, 550);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setSize(700, 400);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // Main Layout
-        setLayout(new BorderLayout(10, 10));
+        model = new DefaultTableModel(
+                new String[]{"Name", "Number", "Type", "Rent/Day", "Available"}, 0);
+        table = new JTable(model);
 
-        // ==============================
-        // TITLE - NORTH
-        // ==============================
+        refreshTable();
 
-        JLabel title = new JLabel(
-                "AVAILABLE VEHICLES",
-                SwingConstants.CENTER);
+        JButton details = new JButton("View Details");
+        JButton back = new JButton("Back");
 
-        title.setFont(new Font("Arial", Font.BOLD, 16));
+        JPanel buttons = new JPanel();
+        buttons.add(details);
+        buttons.add(back);
 
-        add(title, BorderLayout.NORTH);
+        add(new JScrollPane(table), BorderLayout.CENTER);
+        add(buttons, BorderLayout.SOUTH);
 
-        // ==============================
-        // FORM - CENTER
-        // ==============================
-
-        JPanel formPanel = new JPanel(new GridBagLayout());
-
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        gbc.insets = new Insets(8, 10, 8, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        // Search Vehicle
-        JLabel l1 = new JLabel("Search Vehicle:");
-        JTextField t1 = new JTextField(20);
-        JButton searchButton = new JButton("Search");
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-        formPanel.add(l1, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t1, gbc);
-
-        gbc.gridx = 2;
-        gbc.weightx = 0;
-        formPanel.add(searchButton, gbc);
-
-        // Vehicle Model
-        JLabel l2 = new JLabel("Vehicle Model:");
-        JLabel model = new JLabel("Honda City");
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        formPanel.add(l2, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridwidth = 2;
-        formPanel.add(model, gbc);
-
-        gbc.gridwidth = 1;
-
-        // Registration Number
-        JLabel l3 = new JLabel("Registration No:");
-
-        JComboBox<String> registrationBox =
-                new JComboBox<>(
-                        new String[]{
-                                "KL 01 AB 1234",
-                                "KL 01 CD 5678"
-                        });
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        formPanel.add(l3, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridwidth = 2;
-        formPanel.add(registrationBox, gbc);
-
-        gbc.gridwidth = 1;
-
-        // Daily Rate
-        JLabel l4 = new JLabel("Daily Rate:");
-        JLabel rate = new JLabel("₹2,000");
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        formPanel.add(l4, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridwidth = 2;
-        formPanel.add(rate, gbc);
-
-        gbc.gridwidth = 1;
-
-        // Status
-        JLabel l5 = new JLabel("Status:");
-        JLabel status = new JLabel("Available");
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        formPanel.add(l5, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridwidth = 2;
-        formPanel.add(status, gbc);
-
-        gbc.gridwidth = 1;
-
-        // Information
-        JLabel info = new JLabel(
-                "Select the registration number you want to book.");
-
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 3;
-
-        formPanel.add(info, gbc);
-
-        gbc.gridwidth = 1;
-
-        add(formPanel, BorderLayout.CENTER);
-
-        // ==============================
-        // BUTTONS - SOUTH
-        // ==============================
-
-        JPanel buttonPanel = new JPanel(
-                new FlowLayout(
-                        FlowLayout.CENTER, 15, 10));
-
-        JButton viewButton = new JButton("View Details");
-        JButton bookButton = new JButton("Book Vehicle");
-        JButton backButton = new JButton("Back");
-
-        buttonPanel.add(viewButton);
-        buttonPanel.add(bookButton);
-        buttonPanel.add(backButton);
-
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        setVisible(true);
+        details.addActionListener(e -> showDetails());
+        back.addActionListener(e -> {
+            new CustomerDashboardFrame().setVisible(true);
+            dispose();
+        });
     }
 
-    public static void main(String[] args) {
-        new AvailableVehiclesFrame();
-    }
+    private void refreshTable() {
+        model.setRowCount(0);
+
+        for (Vehicle v : AppData.vehicles) {
+            if (v.isAvailable()) {
+                model.addRow(new Object[]{
+                    v.getVehicleName(),
+                    v.getVehicleNumber(),
+                    v.getType(),
+                    v.getRentPerDay(),
+                    "Yes"
+                });
             }
+        }
+    }
+
+    private void showDetails() {
+        int row = table.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Select a vehicle first.");
+            return;
+        }
+
+        String number = model.getValueAt(row, 1).toString();
+
+        for (Vehicle v : AppData.vehicles) {
+            if (v.getVehicleNumber().equals(number)) {
+                new VehicleDetailsFrame(v).setVisible(true);
+                dispose();
+                return;
+            }
+        }
+    }
+    }
