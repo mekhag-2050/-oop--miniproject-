@@ -10,24 +10,75 @@ public class CustomerManagementFrame extends JFrame {
 
     public CustomerManagementFrame() {
         setTitle("Customer Management");
-        setSize(700, 400);
+        setSize(900, 600);
+        setMinimumSize(new Dimension(650, 450));
         setLocationRelativeTo(null);
+
+        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
+        mainPanel.setBackground(new Color(235, 242, 250));
+        mainPanel.setBorder(
+                BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel title = new JLabel("Customer Management");
+        title.setFont(new Font("Arial", Font.BOLD, 25));
+        title.setForeground(new Color(25, 65, 115));
+        title.setBorder(
+                BorderFactory.createEmptyBorder(5, 5, 10, 5));
 
         model = new DefaultTableModel(
                 new String[]{"Name", "Email", "Phone"}, 0);
 
         table = new JTable(model);
+        table.setFont(new Font("Arial", Font.PLAIN, 15));
+        table.setRowHeight(32);
+        table.setBackground(Color.WHITE);
+        table.setForeground(new Color(40, 50, 65));
+        table.setSelectionBackground(new Color(200, 222, 248));
+        table.setSelectionForeground(Color.BLACK);
+        table.setGridColor(new Color(220, 228, 238));
+        table.setFillsViewportHeight(true);
+
+        table.getTableHeader().setFont(
+                new Font("Arial", Font.BOLD, 15));
+        table.getTableHeader().setBackground(
+                new Color(35, 100, 180));
+        table.getTableHeader().setForeground(Color.WHITE);
+        table.getTableHeader().setPreferredSize(
+                new Dimension(0, 38));
+
         refreshTable();
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(
+                BorderFactory.createLineBorder(
+                        new Color(210, 220, 235)));
 
         JButton delete = new JButton("Delete Customer");
         JButton refresh = new JButton("Refresh");
 
-        JPanel buttons = new JPanel();
+        delete.setFont(new Font("Arial", Font.BOLD, 14));
+        delete.setBackground(new Color(190, 60, 60));
+        delete.setForeground(Color.WHITE);
+        delete.setFocusPainted(false);
+        delete.setPreferredSize(new Dimension(170, 40));
+
+        refresh.setFont(new Font("Arial", Font.BOLD, 14));
+        refresh.setBackground(new Color(35, 100, 180));
+        refresh.setForeground(Color.WHITE);
+        refresh.setFocusPainted(false);
+        refresh.setPreferredSize(new Dimension(120, 40));
+
+        JPanel buttons = new JPanel(
+                new FlowLayout(FlowLayout.RIGHT, 12, 5));
+        buttons.setBackground(new Color(235, 242, 250));
         buttons.add(delete);
         buttons.add(refresh);
 
-        add(new JScrollPane(table), BorderLayout.CENTER);
-        add(buttons, BorderLayout.SOUTH);
+        mainPanel.add(title, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(buttons, BorderLayout.SOUTH);
+
+        add(mainPanel);
 
         delete.addActionListener(e -> deleteCustomer());
         refresh.addActionListener(e -> refreshTable());
