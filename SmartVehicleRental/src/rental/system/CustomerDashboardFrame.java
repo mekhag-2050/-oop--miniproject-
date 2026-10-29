@@ -1,87 +1,96 @@
 package rental.system;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class CustomerDashboardFrame extends JFrame {
-
     public CustomerDashboardFrame() {
-
-        setTitle("Customer Dashboard");
-        setSize(500, 500);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setTitle("Smart Vehicle Rental System - Customer Dashboard");
+        setSize(900, 600);
+        setMinimumSize(new Dimension(650, 500));
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Main Layout
-        setLayout(new BorderLayout(10, 10));
+        // Main background
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBackground(new Color(235, 242, 250));
 
-        // ==============================
-        // TITLE - NORTH
-        // ==============================
-
-        JLabel title = new JLabel(
-                "CUSTOMER DASHBOARD",
-                SwingConstants.CENTER);
-
-        title.setFont(new Font("Arial", Font.BOLD, 18));
-
-        add(title, BorderLayout.NORTH);
-
-        // ==============================
-        // CENTER
-        // ==============================
-
-        JPanel centerPanel = new JPanel(
-                new BorderLayout(10, 15));
+        // Dashboard card
+        JPanel panel = new JPanel(new GridLayout(6, 1, 12, 12));
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(
+                        new Color(210, 220, 235), 1),
+                BorderFactory.createEmptyBorder(30, 40, 30, 40)
+        ));
+        panel.setPreferredSize(new Dimension(430, 480));
 
         JLabel welcome = new JLabel(
-                "Welcome to Smart Vehicle Rental",
-                SwingConstants.CENTER);
+                "Welcome, " + AppData.loggedInCustomer.getName(),
+                JLabel.CENTER);
+        welcome.setFont(new Font("Arial", Font.BOLD, 22));
+        welcome.setForeground(new Color(25, 65, 115));
 
-        welcome.setFont(new Font("Arial", Font.PLAIN, 15));
+        JButton vehicles = new JButton("Available Vehicles");
+        JButton profile = new JButton("My Profile");
+        JButton bookings = new JButton("My Bookings");
+        JButton history = new JButton("Rental History");
+        JButton logout = new JButton("Logout");
 
-        centerPanel.add(welcome, BorderLayout.NORTH);
+        JButton[] buttons = {
+            vehicles, profile, bookings, history, logout
+        };
 
-        // ==============================
-        // DASHBOARD BUTTONS
-        // ==============================
+        for (JButton button : buttons) {
+            button.setFont(new Font("Arial", Font.BOLD, 15));
+            button.setFocusPainted(false);
+            button.setPreferredSize(new Dimension(330, 45));
+        }
 
-        JPanel buttonPanel = new JPanel(
-                new GridLayout(3, 2, 15, 15));
+        vehicles.setBackground(new Color(35, 100, 180));
+        vehicles.setForeground(Color.WHITE);
 
-        JButton b1 = new JButton("Available Vehicles");
-        JButton b2 = new JButton("Book Vehicle");
-        JButton b3 = new JButton("My Bookings");
-        JButton b4 = new JButton("My Bill");
-        JButton b5 = new JButton("My Profile");
-        JButton b6 = new JButton("Rental History");
+        profile.setBackground(new Color(225, 237, 250));
+        profile.setForeground(new Color(25, 65, 115));
 
-        buttonPanel.add(b1);
-        buttonPanel.add(b2);
-        buttonPanel.add(b3);
-        buttonPanel.add(b4);
-        buttonPanel.add(b5);
-        buttonPanel.add(b6);
+        bookings.setBackground(new Color(225, 237, 250));
+        bookings.setForeground(new Color(25, 65, 115));
 
-        centerPanel.add(buttonPanel, BorderLayout.CENTER);
+        history.setBackground(new Color(225, 237, 250));
+        history.setForeground(new Color(25, 65, 115));
 
-        add(centerPanel, BorderLayout.CENTER);
+        logout.setBackground(new Color(190, 55, 55));
+        logout.setForeground(Color.WHITE);
 
-        // ==============================
-        // LOGOUT - SOUTH
-        // ==============================
+        panel.add(welcome);
+        panel.add(vehicles);
+        panel.add(profile);
+        panel.add(bookings);
+        panel.add(history);
+        panel.add(logout);
 
-        JPanel bottomPanel = new JPanel(new FlowLayout());
+        // Center dashboard while background fills the window
+        mainPanel.add(panel);
+        add(mainPanel, BorderLayout.CENTER);
 
-        JButton logoutButton = new JButton("Logout");
+        vehicles.addActionListener(e -> {
+            new AvailableVehiclesFrame().setVisible(true);
+            dispose();
+        });
 
-        bottomPanel.add(logoutButton);
+        profile.addActionListener(e ->
+                new CustomerProfileFrame().setVisible(true));
 
-        add(bottomPanel, BorderLayout.SOUTH);
+        bookings.addActionListener(e ->
+                new MyBookingsFrame().setVisible(true));
 
-        setVisible(true);
+        history.addActionListener(e ->
+                new RentalHistoryFrame().setVisible(true));
+
+        logout.addActionListener(e -> {
+            AppData.loggedInCustomer = null;
+            new LoginFrame().setVisible(true);
+            dispose();
+        });
     }
-
-    public static void main(String[] args) {
-        new CustomerDashboardFrame();
-    }
-            }
+}
