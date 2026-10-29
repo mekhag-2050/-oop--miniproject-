@@ -1,72 +1,51 @@
 package rental.system;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class AdminLoginFrame extends JFrame {
+    JTextField usernameField;
+    JPasswordField passwordField;
 
     public AdminLoginFrame() {
         setTitle("Admin Login");
-        setSize(400, 330);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setSize(350, 250);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new GridLayout(4, 1, 10, 10));
 
-        // Title
-        JLabel title = new JLabel("ADMIN LOGIN", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 18));
-        add(title, BorderLayout.NORTH);
+        usernameField = new JTextField();
+        passwordField = new JPasswordField();
 
-        // Form Panel
-        JPanel formPanel = new JPanel(new GridBagLayout());
+        usernameField.setBorder(
+                BorderFactory.createTitledBorder("Username"));
+        passwordField.setBorder(
+                BorderFactory.createTitledBorder("Password"));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 10, 8, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JButton login = new JButton("Login");
+        JButton back = new JButton("Back");
 
-        // Username
-        JLabel l1 = new JLabel("Username:");
-        JTextField t1 = new JTextField(15);
+        add(usernameField);
+        add(passwordField);
+        add(login);
+        add(back);
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-        formPanel.add(l1, gbc);
+        login.addActionListener(e -> {
+            String username = usernameField.getText().trim();
+            String password = new String(passwordField.getPassword());
 
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t1, gbc);
+            if (username.equals("admin")
+                    && password.equals("admin123")) {
+                new AdminDashboardFrame().setVisible(true);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Invalid admin username or password.");
+            }
+        });
 
-        // Password
-        JLabel l2 = new JLabel("Password:");
-        JPasswordField t2 = new JPasswordField(15);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.weightx = 0;
-        formPanel.add(l2, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t2, gbc);
-
-        add(formPanel, BorderLayout.CENTER);
-
-        // Buttons
-        JPanel buttonPanel = new JPanel(
-                new FlowLayout(FlowLayout.CENTER, 15, 10));
-
-        JButton b1 = new JButton("Login");
-        JButton b2 = new JButton("Back");
-
-        buttonPanel.add(b1);
-        buttonPanel.add(b2);
-
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        new AdminLoginFrame();
+        back.addActionListener(e -> {
+            new LoginFrame().setVisible(true);
+            dispose();
+        });
     }
 }
