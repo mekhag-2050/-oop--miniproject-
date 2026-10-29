@@ -10,26 +10,79 @@ public class VehicleManagementFrame extends JFrame {
 
     public VehicleManagementFrame() {
         setTitle("Vehicle Management");
-        setSize(750, 400);
+        setSize(900, 600);
+        setMinimumSize(new Dimension(650, 450));
         setLocationRelativeTo(null);
+
+        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
+        mainPanel.setBackground(new Color(235, 242, 250));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel title = new JLabel("Vehicle Management");
+        title.setFont(new Font("Arial", Font.BOLD, 25));
+        title.setForeground(new Color(25, 65, 115));
+        title.setBorder(BorderFactory.createEmptyBorder(5, 5, 10, 5));
 
         model = new DefaultTableModel(
                 new String[]{"Name", "Number", "Type", "Rent", "Available"}, 0);
 
         table = new JTable(model);
+        table.setFont(new Font("Arial", Font.PLAIN, 15));
+        table.setRowHeight(32);
+        table.setBackground(Color.WHITE);
+        table.setForeground(new Color(40, 50, 65));
+        table.setSelectionBackground(new Color(200, 222, 248));
+        table.setSelectionForeground(Color.BLACK);
+        table.setGridColor(new Color(220, 228, 238));
+        table.setFillsViewportHeight(true);
+
+        table.getTableHeader().setFont(
+                new Font("Arial", Font.BOLD, 15));
+        table.getTableHeader().setBackground(
+                new Color(35, 100, 180));
+        table.getTableHeader().setForeground(Color.WHITE);
+        table.getTableHeader().setPreferredSize(new Dimension(0, 38));
+
         refreshTable();
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createLineBorder(
+                new Color(210, 220, 235)));
 
         JButton add = new JButton("Add Vehicle");
         JButton delete = new JButton("Delete Vehicle");
         JButton refresh = new JButton("Refresh");
 
-        JPanel buttons = new JPanel();
+        add.setFont(new Font("Arial", Font.BOLD, 14));
+        add.setBackground(new Color(35, 100, 180));
+        add.setForeground(Color.WHITE);
+        add.setFocusPainted(false);
+
+        delete.setFont(new Font("Arial", Font.BOLD, 14));
+        delete.setBackground(new Color(190, 60, 60));
+        delete.setForeground(Color.WHITE);
+        delete.setFocusPainted(false);
+
+        refresh.setFont(new Font("Arial", Font.BOLD, 14));
+        refresh.setBackground(new Color(225, 237, 250));
+        refresh.setForeground(new Color(25, 65, 115));
+        refresh.setFocusPainted(false);
+
+        add.setPreferredSize(new Dimension(150, 40));
+        delete.setPreferredSize(new Dimension(170, 40));
+        refresh.setPreferredSize(new Dimension(120, 40));
+
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 5));
+        buttons.setBackground(new Color(235, 242, 250));
         buttons.add(add);
         buttons.add(delete);
         buttons.add(refresh);
 
-        add(new JScrollPane(table), BorderLayout.CENTER);
-        add(buttons, BorderLayout.SOUTH);
+        mainPanel.add(title, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(buttons, BorderLayout.SOUTH);
+
+        add(mainPanel);
 
         add.addActionListener(e -> addVehicle());
         delete.addActionListener(e -> deleteVehicle());
