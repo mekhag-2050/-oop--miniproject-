@@ -1,122 +1,122 @@
 package rental.system;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class BookingManagementFrame extends JFrame {
+    DefaultTableModel model;
+    JTable table;
 
     public BookingManagementFrame() {
-
         setTitle("Booking Management");
-        setSize(550, 430);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setSize(900, 600);
+        setMinimumSize(new Dimension(650, 450));
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(10, 10));
 
-        // Title
-        JLabel title = new JLabel(
-                "BOOKING MANAGEMENT",
-                SwingConstants.CENTER);
+        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
+        mainPanel.setBackground(new Color(235, 242, 250));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        title.setFont(new Font("Arial", Font.BOLD, 18));
-        add(title, BorderLayout.NORTH);
+        JLabel title = new JLabel("Booking Management");
+        title.setFont(new Font("Arial", Font.BOLD, 25));
+        title.setForeground(new Color(25, 65, 115));
+        title.setBorder(BorderFactory.createEmptyBorder(5, 5, 10, 5));
 
-        // Form Panel
-        JPanel formPanel = new JPanel(new GridBagLayout());
+        model = new DefaultTableModel(
+                new String[]{"Customer", "Vehicle", "Days",
+                    "Amount", "Status"}, 0);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 10, 8, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        table = new JTable(model);
+        table.setFont(new Font("Arial", Font.PLAIN, 15));
+        table.setRowHeight(32);
+        table.setBackground(Color.WHITE);
+        table.setForeground(new Color(40, 50, 65));
+        table.setSelectionBackground(new Color(200, 222, 248));
+        table.setSelectionForeground(Color.BLACK);
+        table.setGridColor(new Color(220, 228, 238));
+        table.setFillsViewportHeight(true);
 
-        // Booking ID
-        JLabel l1 = new JLabel("Booking ID:");
-        JTextField t1 = new JTextField(20);
+        table.getTableHeader().setFont(
+                new Font("Arial", Font.BOLD, 15));
+        table.getTableHeader().setBackground(
+                new Color(35, 100, 180));
+        table.getTableHeader().setForeground(Color.WHITE);
+        table.getTableHeader().setPreferredSize(new Dimension(0, 38));
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-        formPanel.add(l1, gbc);
+        refreshTable();
 
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t1, gbc);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createLineBorder(
+                new Color(210, 220, 235)));
 
-        // Customer
-        JLabel l2 = new JLabel("Customer:");
-        JTextField t2 = new JTextField(20);
+        JButton cancel = new JButton("Cancel Booking");
+        JButton refresh = new JButton("Refresh");
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.weightx = 0;
-        formPanel.add(l2, gbc);
+        cancel.setFont(new Font("Arial", Font.BOLD, 14));
+        cancel.setBackground(new Color(190, 60, 60));
+        cancel.setForeground(Color.WHITE);
+        cancel.setFocusPainted(false);
+        cancel.setPreferredSize(new Dimension(170, 40));
 
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t2, gbc);
+        refresh.setFont(new Font("Arial", Font.BOLD, 14));
+        refresh.setBackground(new Color(35, 100, 180));
+        refresh.setForeground(Color.WHITE);
+        refresh.setFocusPainted(false);
+        refresh.setPreferredSize(new Dimension(120, 40));
 
-        // Vehicle
-        JLabel l3 = new JLabel("Vehicle:");
-        JTextField t3 = new JTextField(20);
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 5));
+        buttons.setBackground(new Color(235, 242, 250));
+        buttons.add(cancel);
+        buttons.add(refresh);
 
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.weightx = 0;
-        formPanel.add(l3, gbc);
+        mainPanel.add(title, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(buttons, BorderLayout.SOUTH);
 
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t3, gbc);
+        add(mainPanel);
 
-        // Start Date
-        JLabel l4 = new JLabel("Start Date:");
-        JTextField t4 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.weightx = 0;
-        formPanel.add(l4, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t4, gbc);
-
-        // Booking Status
-        JLabel l5 = new JLabel("Booking Status:");
-
-        JComboBox<String> c1 = new JComboBox<>(
-                new String[]{
-                        "Confirmed",
-                        "Pending",
-                        "Cancelled",
-                        "Completed"
-                });
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.weightx = 0;
-        formPanel.add(l5, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(c1, gbc);
-
-        add(formPanel, BorderLayout.CENTER);
-
-        // Buttons
-        JPanel buttonPanel = new JPanel(
-                new FlowLayout(FlowLayout.CENTER, 20, 10));
-
-        JButton b1 = new JButton("Update Booking");
-        JButton b2 = new JButton("Delete Booking");
-
-        buttonPanel.add(b1);
-        buttonPanel.add(b2);
-
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        setVisible(true);
+        cancel.addActionListener(e -> cancelBooking());
+        refresh.addActionListener(e -> refreshTable());
     }
 
-    public static void main(String[] args) {
-        new BookingManagementFrame();
+    private void refreshTable() {
+        model.setRowCount(0);
+
+        for (Booking b : AppData.bookings) {
+            model.addRow(new Object[]{
+                b.getCustomer().getName(),
+                b.getVehicle().getVehicleName(),
+                b.getDays(),
+                b.getTotalAmount(),
+                b.getStatus()
+            });
+        }
+    }
+
+    private void cancelBooking() {
+        int row = table.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Select a booking first.");
+            return;
+        }
+
+        Booking b = AppData.bookings.get(row);
+
+        if (b.getStatus().equals("Cancelled")) {
+            JOptionPane.showMessageDialog(this,
+                    "This booking is already cancelled.");
+            return;
+        }
+
+        b.setStatus("Cancelled");
+        b.getVehicle().setAvailable(true);
+
+        refreshTable();
+
+        JOptionPane.showMessageDialog(this,
+                "Booking cancelled.");
     }
 }
