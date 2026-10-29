@@ -1,44 +1,44 @@
 package rental.system;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class AdminDashboardFrame extends JFrame {
-
     public AdminDashboardFrame() {
         setTitle("Admin Dashboard");
-        setSize(500, 450);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(400, 350);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(10, 10));
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Title
-        JLabel title = new JLabel(
-                "ADMIN DASHBOARD",
-                SwingConstants.CENTER);
+        JPanel panel = new JPanel(new GridLayout(5, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
-        title.setFont(new Font("Arial", Font.BOLD, 18));
-        add(title, BorderLayout.NORTH);
+        JLabel title = new JLabel("ADMIN DASHBOARD", JLabel.CENTER);
+        JButton vehicles = new JButton("Vehicle Management");
+        JButton bookings = new JButton("Booking Management");
+        JButton customers = new JButton("Customer Management");
+        JButton logout = new JButton("Logout");
 
-        // Button Panel
-        JPanel buttonPanel = new JPanel(
-                new GridLayout(4, 1, 10, 15));
+        panel.add(title);
+        panel.add(vehicles);
+        panel.add(bookings);
+        panel.add(customers);
+        panel.add(logout);
 
-        JButton b1 = new JButton("Manage Vehicles");
-        JButton b2 = new JButton("Manage Bookings");
-        JButton b3 = new JButton("Manage Customers");
-        JButton b4 = new JButton("Logout");
+        add(panel);
 
-        buttonPanel.add(b1);
-        buttonPanel.add(b2);
-        buttonPanel.add(b3);
-        buttonPanel.add(b4);
+        vehicles.addActionListener(e ->
+                new VehicleManagementFrame().setVisible(true));
 
-        add(buttonPanel, BorderLayout.CENTER);
+        bookings.addActionListener(e ->
+                new BookingManagementFrame().setVisible(true));
 
-        setVisible(true);
-    }
+        customers.addActionListener(e ->
+                new CustomerManagementFrame().setVisible(true));
 
-    public static void main(String[] args) {
-        new AdminDashboardFrame();
+        logout.addActionListener(e -> {
+            new LoginFrame().setVisible(true);
+            dispose();
+        });
     }
 }
