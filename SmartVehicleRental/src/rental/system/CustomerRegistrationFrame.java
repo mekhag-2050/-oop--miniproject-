@@ -1,153 +1,76 @@
 package rental.system;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class CustomerRegistrationFrame extends JFrame {
+    JTextField nameField, emailField, phoneField;
+    JPasswordField passwordField;
 
     public CustomerRegistrationFrame() {
-
         setTitle("Customer Registration");
-        setSize(500, 470);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setSize(400, 350);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Main Layout
-        setLayout(new BorderLayout(10, 10));
+        JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // ==============================
-        // TITLE - NORTH
-        // ==============================
+        nameField = new JTextField();
+        emailField = new JTextField();
+        phoneField = new JTextField();
+        passwordField = new JPasswordField();
 
-        JLabel title = new JLabel(
-                "CUSTOMER REGISTRATION",
-                SwingConstants.CENTER);
+        JButton register = new JButton("Register");
+        JButton back = new JButton("Back to Login");
 
-        title.setFont(new Font("Arial", Font.BOLD, 16));
+        panel.add(new JLabel("Name:"));
+        panel.add(nameField);
+        panel.add(new JLabel("Email:"));
+        panel.add(emailField);
+        panel.add(new JLabel("Phone:"));
+        panel.add(phoneField);
+        panel.add(new JLabel("Password:"));
+        panel.add(passwordField);
+        panel.add(register);
+        panel.add(back);
 
-        add(title, BorderLayout.NORTH);
+        add(panel);
 
-        // ==============================
-        // FORM - CENTER
-        // ==============================
-
-        JPanel formPanel = new JPanel(new GridBagLayout());
-
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        gbc.insets = new Insets(6, 10, 6, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        // Customer Name
-        JLabel l1 = new JLabel("Customer Name:");
-        JTextField t1 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-        formPanel.add(l1, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t1, gbc);
-
-        // Phone
-        JLabel l2 = new JLabel("Phone No:");
-        JTextField t2 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.weightx = 0;
-        formPanel.add(l2, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t2, gbc);
-
-        // Email
-        JLabel l3 = new JLabel("Email:");
-        JTextField t3 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.weightx = 0;
-        formPanel.add(l3, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t3, gbc);
-
-        // License
-        JLabel l4 = new JLabel("License No:");
-        JTextField t4 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.weightx = 0;
-        formPanel.add(l4, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t4, gbc);
-
-        // Address
-        JLabel l5 = new JLabel("Address:");
-        JTextField t5 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.weightx = 0;
-        formPanel.add(l5, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t5, gbc);
-
-        // Username
-        JLabel l6 = new JLabel("Username:");
-        JTextField t6 = new JTextField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.weightx = 0;
-        formPanel.add(l6, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t6, gbc);
-
-        // Password
-        JLabel l7 = new JLabel("Password:");
-        JPasswordField t7 = new JPasswordField(20);
-
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        gbc.weightx = 0;
-        formPanel.add(l7, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        formPanel.add(t7, gbc);
-
-        add(formPanel, BorderLayout.CENTER);
-
-        // ==============================
-        // BUTTONS - SOUTH
-        // ==============================
-
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-
-        JButton b1 = new JButton("Register");
-        JButton b2 = new JButton("Back");
-
-        buttonPanel.add(b1);
-        buttonPanel.add(b2);
-
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        setVisible(true);
+        register.addActionListener(e -> registerCustomer());
+        back.addActionListener(e -> {
+            new LoginFrame().setVisible(true);
+            dispose();
+        });
     }
 
-    public static void main(String[] args) {
-        new CustomerRegistrationFrame();
-    }
+    private void registerCustomer() {
+        String name = nameField.getText().trim();
+        String email = emailField.getText().trim();
+        String phone = phoneField.getText().trim();
+        String password = new String(passwordField.getPassword());
+
+        if (name.isEmpty() || email.isEmpty()
+                || phone.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Fill all fields.");
+            return;
         }
+
+        for (Customer c : AppData.customers) {
+            if (c.getEmail().equalsIgnoreCase(email)) {
+                JOptionPane.showMessageDialog(this,
+                        "Email already registered.");
+                return;
+            }
+        }
+
+        AppData.customers.add(
+                new Customer(name, email, phone, password));
+
+        JOptionPane.showMessageDialog(this,
+                "Registration successful!");
+
+        new LoginFrame().setVisible(true);
+        dispose();
+    }
+            }
